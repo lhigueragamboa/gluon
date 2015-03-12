@@ -1,7 +1,9 @@
 package gluon
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
@@ -14,14 +16,6 @@ type router struct {
 }
 
 func New(path string) *router {
-	if path == "/" {
-		path = ""
-	}
-
-	if last := len(path); path != "" && path[last] == '/' {
-		path = path[:last-1]
-	}
-
 	return &router{
 		basePath:        path,
 		middlewareStack: alice.New(),
@@ -31,4 +25,8 @@ func New(path string) *router {
 
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	r.router.ServeHTTP(w, req)
+}
+
+func (r *router) LogHandlerErrors() {
+	Logger = log.New(os.Stderr, "gluon: ", log.Lshortfile)
 }

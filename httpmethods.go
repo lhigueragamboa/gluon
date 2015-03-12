@@ -5,41 +5,41 @@ import (
 	"net/http"
 )
 
+var ErrSetingRoutes error
+
 func (r *router) Get(path string, handler interface{}) {
-	r.do("GET", path, handler)
+	ErrSetingRoutes = r.do("GET", path, handler)
 }
 
 func (r *router) Post(path string, handler interface{}) {
-	r.do("POST", path, handler)
+	ErrSetingRoutes = r.do("POST", path, handler)
 }
 
 func (r *router) Put(path string, handler interface{}) {
-	r.do("PUT", path, handler)
+	ErrSetingRoutes = r.do("PUT", path, handler)
 }
 
 func (r *router) Patch(path string, handler interface{}) {
-	r.do("PATCH", path, handler)
+	ErrSetingRoutes = r.do("PATCH", path, handler)
 }
 
 func (r *router) Head(path string, handler interface{}) {
-	r.do("HEAD", path, handler)
+	ErrSetingRoutes = r.do("HEAD", path, handler)
 }
 
 func (r *router) Delete(path string, handler interface{}) {
-	r.do("DELETE", path, handler)
+	ErrSetingRoutes = r.do("DELETE", path, handler)
 }
 
 func (r *router) Options(path string, handler interface{}) {
-	r.do("OPTIONS", path, handler)
+	ErrSetingRoutes = r.do("OPTIONS", path, handler)
 }
 
 func (r *router) Trace(path string, handler interface{}) {
-	r.do("TRACE", path, handler)
+	ErrSetingRoutes = r.do("TRACE", path, handler)
 }
 
-var ErrSetingRoutes error
-
-func (r *router) do(method, path string, handler interface{}) {
+func (r *router) do(method, path string, handler interface{}) error {
 	switch h := handler.(type) {
 	case http.Handler:
 		r.router.Handle(
@@ -70,6 +70,8 @@ func (r *router) do(method, path string, handler interface{}) {
 			),
 		)
 	default:
-		ErrSetingRoutes = fmt.Errorf("Wrong type for handler: %T", h)
+		return fmt.Errorf("Wrong type for handler: %T", h)
 	}
+
+	return nil
 }

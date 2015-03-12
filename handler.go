@@ -10,7 +10,7 @@ import (
 type handlerFuncError func(http.ResponseWriter, *http.Request) *HandlerError
 
 type HandlerError struct {
-	Err        error
+	Error      error
 	Message    string
 	StatusCode int
 }
@@ -21,6 +21,9 @@ type errResponse struct {
 
 func (h handlerFuncError) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if hErr := h(w, r); hErr != nil {
+		if Logger != nil {
+			go func() { Logger.Println(hErr.Error) }()
+		}
 		writeErrorJSON(w, hErr)
 	}
 }
