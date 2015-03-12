@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"runtime"
 
@@ -26,14 +25,16 @@ func init() {
 }
 
 func main() {
+	mux := gluon.New("/")
+	mux.Get("/", name)
+
 	hola := gluon.New("/hola")
 	hola.Get("/name/:name", name)
 	hola.Get("/error", err)
-	if gluon.ErrSetingRoutes != nil {
-		log.Fatalln(gluon.ErrSetingRoutes)
+
+	gluon.LogHandlerErrors = true
+
+	if err := gluon.Start(":8080"); err != nil {
+		gluon.Logger.Fatalln(err)
 	}
-
-	hola.LogHandlerErrors()
-
-	log.Fatalln(http.ListenAndServe(":8080", hola))
 }

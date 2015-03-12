@@ -1,5 +1,11 @@
 package gluon
 
-import "log"
+import (
+	"log"
+	"os"
+)
 
-var Logger *log.Logger
+var (
+	Logger           = log.New(os.Stderr, "gluon: ", log.LstdFlags|log.Lmicroseconds)
+	LogHandlerErrors bool
+)

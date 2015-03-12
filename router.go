@@ -1,32 +1,29 @@
 package gluon
 
 import (
-	"log"
 	"net/http"
-	"os"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 )
 
+var defaultRouter = httprouter.New()
+
 type router struct {
 	basePath        string
 	middlewareStack alice.Chain
-	router          *httprouter.Router
 }
 
 func New(path string) *router {
+	path = strings.TrimRight(path, "/")
+
 	return &router{
 		basePath:        path,
 		middlewareStack: alice.New(),
-		router:          httprouter.New(),
 	}
 }
 
-func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	r.router.ServeHTTP(w, req)
-}
-
-func (r *router) LogHandlerErrors() {
-	Logger = log.New(os.Stderr, "gluon: ", log.Lshortfile)
+func Start(addr string) error {
+	return http.ListenAndServe(addr, defaultRouter)
 }

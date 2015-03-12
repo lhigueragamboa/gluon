@@ -21,7 +21,7 @@ type errResponse struct {
 
 func (h handlerFuncError) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if hErr := h(w, r); hErr != nil {
-		if Logger != nil {
+		if LogHandlerErrors {
 			go func() { Logger.Println(hErr.Error) }()
 		}
 		writeErrorJSON(w, hErr)
